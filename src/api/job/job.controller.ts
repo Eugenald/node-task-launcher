@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Get } from '@nestjs/common'
-import { JobService } from './job.service'
 import { ApiTags, ApiOperation } from '@nestjs/swagger'
+import { JobService } from './job.service'
 import { CreateJobDto } from './dto/create-job.dto'
 
 @ApiTags('v1/jobs')
