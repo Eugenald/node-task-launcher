@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { spawn } from 'child_process'
 import { platform } from 'os'
-import { extname } from 'path'
+import { resolve, extname } from 'path'
 import { ConfigService } from '@nestjs/config'
 
 export interface BatchJobResult {
@@ -18,7 +18,7 @@ export class JobRunnerService {
   private readonly scriptPath: string
 
   constructor(config: ConfigService) {
-    this.scriptPath = `task/${config.get<string>('job.task')}`
+    this.scriptPath = resolve('task', config.get<string>('job.task'))
   }
 
   run(args: string[] = []): Promise<BatchJobResult> {
