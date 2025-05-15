@@ -1,6 +1,6 @@
-# Node C++ Task Launcher
+# Node Task Launcher
 
-**Node / NestJS backend that starts, tracks and analyses native jobs written in C / C++ (or any script/batch).**  
+**Node / NestJS backend that starts, tracks and analyses native jobs (.exe, .sh, .bat).**  
 It demonstrates:
 
 - parallel process execution with back-pressure (`async-sema`)
