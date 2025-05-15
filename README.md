@@ -34,8 +34,6 @@ cp .env.example .env         # edit if needed
 npm install
 
 npm run start:dev            # hot-reload dev mode
-# or
-npm run build && node dist/main.js
 ```
 
 Swagger UI: **http://localhost:3030/api**
