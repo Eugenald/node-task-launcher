@@ -44,10 +44,10 @@ export class JobManagerService {
   }
 
   private async enqueue(job: JobRecord) {
-    await this.gate.acquire() // ждём свободный «слот»
+    await this.gate.acquire()
     this.execute(job)
       .catch((e) => this.log.error(`Unexpected error for ${job.id}: ${e}`))
-      .finally(() => this.gate.release()) // освободить «слот» при любом исходе
+      .finally(() => this.gate.release())
   }
 
   private async execute(job: JobRecord) {

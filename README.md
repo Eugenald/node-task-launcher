@@ -135,9 +135,10 @@ Script path: `tests/smoke/test.sh`
 src/
 ├── job-runner/           # Native job runner (spawn / wine)
 ├── job-manager/          # Job queueing, retry, and semaphores
-├── job-api/              # REST API (v1/jobs)
 ├── job-execution-store/  # Abstract store with in-memory implementation
-├── stats/                # Stats analysis and /v1/stats endpoint
+├── api/                  # API-related modules
+│   ├── job/              # REST API (v1/jobs)
+│   └── stats/            # REST API (v1/stats)
 └── common/               # Types and shared interfaces
 
 tests/
@@ -149,7 +150,6 @@ task/
 ```
 ## Prerequisites & Tips
 
-- **Node.js** ≥ 18
 - For Windows-exe on macOS/Linux: **Wine 7+**
 - Building your own C / C++ job:
   ```bash
