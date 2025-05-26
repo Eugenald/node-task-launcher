@@ -4,7 +4,7 @@ set -euo pipefail
 
 HOST="${HOST:-localhost}"
 PORT="${PORT:-3030}"
-TOTAL="${TOTAL:-10}"
+TOTAL="${1:-${TOTAL:-10}}"
 BASE_URL="http://${HOST}:${PORT}/v1"
 
 P_LONG=60
