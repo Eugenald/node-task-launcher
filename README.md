@@ -1,7 +1,7 @@
-# Node C++ Task Launcher
+# Node Task Launcher
 
-**Node / NestJS backend that starts, tracks and analyses native jobs written in C / C++ (or any script/batch).**  
-It was built as the solution for the _“Senior Backend Developer Task”_ and demonstrates:
+**Node / NestJS backend that starts, tracks and analyses native jobs (.exe, .sh, .bat).**  
+It demonstrates:
 
 - parallel process execution with back-pressure (`async-sema`)
 - retry / crash-detection logic
@@ -34,8 +34,6 @@ cp .env.example .env         # edit if needed
 npm install
 
 npm run start:dev            # hot-reload dev mode
-# or
-npm run build && node dist/main.js
 ```
 
 Swagger UI: **http://localhost:3030/api**
