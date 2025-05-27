@@ -17,47 +17,57 @@ export class JobRunnerService {
   private readonly isWindows = platform() === 'win32'
   private readonly scriptPath: string
 
-  constructor(config: ConfigService) {
-    this.scriptPath = resolve('task', config.get<string>('job.task'))
+  constructor(cfg: ConfigService) {
+    const taskName = cfg.get<string>('job.task')
+    if (!taskName) throw new Error('`job.task` is not defined in configuration')
+
+    this.scriptPath = resolve('task', cfg.get<string>('job.task'))
   }
 
   run(args: string[] = []): Promise<BatchJobResult> {
     return new Promise((resolve, reject) => {
       const ext = extname(this.scriptPath).toLowerCase()
+
       let command: string
       let cmdArgs: string[] = args
       let useShell = false
 
-      /* === COMMAND === */
-      if (this.isWindows) {
-        // ---------- WINDOWS ----------
-        if (ext === '.sh') {
-          return reject(new Error('Cannot execute .sh task on Windows environment'))
-        }
-        if (ext === '.bat') {
-          command = this.scriptPath
-          useShell = true // .bat
-        } else {
-          // .exe
-          command = this.scriptPath
+      if (ext === '.js') {
+        command = process.execPath
+        cmdArgs = [this.scriptPath, ...args]
+      } else if (this.isWindows) {
+        switch (ext) {
+          case '.bat':
+            command = this.scriptPath
+            useShell = true // run via cmd.exe implicitly
+            break
+          case '.exe':
+            command = this.scriptPath
+            break
+          case '.sh':
+            return reject(new Error('Cannot execute .sh task in Windows environment'))
+          default:
+            return reject(new Error(`Unsupported task extension '${ext}' on Windows`))
         }
       } else {
-        // ---------- UNIX / macOS ----------
-        if (ext === '.sh') {
-          command = this.scriptPath
-          useShell = true
-        } else if (ext === '.exe') {
-          command = 'wine'
-          cmdArgs = [this.scriptPath, ...args]
-        } else if (ext === '.bat') {
-          command = 'wine'
-          cmdArgs = ['cmd', '/c', this.scriptPath, ...args]
-        } else {
-          return reject(new Error(`Unsupported task extension '${ext}' on Unix`))
+        switch (ext) {
+          case '.sh':
+            command = this.scriptPath
+            useShell = true
+            break
+          case '.exe':
+            command = 'wine'
+            cmdArgs = [this.scriptPath, ...args]
+            break
+          case '.bat':
+            command = 'wine'
+            cmdArgs = ['cmd', '/c', this.scriptPath, ...args]
+            break
+          default:
+            return reject(new Error(`Unsupported task extension '${ext}' on Unix`))
         }
       }
 
-      /* === SPAWN === */
       const child = spawn(command, cmdArgs, {
         shell: useShell,
         windowsHide: true,
@@ -68,13 +78,15 @@ export class JobRunnerService {
       let stderr = ''
 
       child.stdout.on('data', (chunk) => {
-        stdout += chunk.toString()
-        this.log.debug(`[STDOUT] ${chunk.toString().trim()}`)
+        const data = chunk.toString()
+        stdout += data
+        this.log.debug(`[STDOUT] ${data.trim()}`)
       })
 
       child.stderr.on('data', (chunk) => {
-        stderr += chunk.toString()
-        this.log.debug(`[STDERR] ${chunk.toString().trim()}`)
+        const data = chunk.toString()
+        stderr += data
+        this.log.debug(`[STDERR] ${data.trim()}`)
       })
 
       child.once('error', (err) => {

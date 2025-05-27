@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { StatsModule } from './src/api/stats/stats.module'
+import { StatsModule } from './src/api/v1/stats/stats.module'
 import { JobRunnerModule } from './src/job-runner/job-runner.module'
 import { ConfigModule } from '@nestjs/config'
 import appconfig from './src/appconfig'

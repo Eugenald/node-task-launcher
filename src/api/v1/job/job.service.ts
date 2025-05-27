@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { JobManagerService } from '../../job-manager/job-manager.service'
-import { JobRecord } from '../../common/job.types'
+import { JobManagerService } from '../../../job-manager/job-manager.service'
+import { JobRecord } from '../../../common/job.types'
 
 @Injectable()
 export class JobService {
@@ -12,5 +12,9 @@ export class JobService {
 
   async findAll(): Promise<JobRecord[]> {
     return await this.jobManager.findAll()
+  }
+
+  async findById(id: string): Promise<JobRecord> {
+    return await this.jobManager.findById(id)
   }
 }

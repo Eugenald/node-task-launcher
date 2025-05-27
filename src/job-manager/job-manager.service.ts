@@ -11,6 +11,7 @@ import { JobStore } from '../job-execution-store/types/job-store.interface'
 @Injectable()
 export class JobManagerService {
   private readonly log = new Logger(JobManagerService.name)
+  private taskFileName = this.cfg.get<string>('job.task')
   private readonly gate: Sema
 
   constructor(
@@ -24,9 +25,12 @@ export class JobManagerService {
 
   async create(name: string, args: string[] = []): Promise<string> {
     const id = uuid()
+    const type = this.taskFileName.includes('estimate-cost.js') ? 'estimate-cost' : 'test'
+
     const job: JobRecord = {
       id,
       name,
+      type,
       args,
       status: 'queued',
       tries: 1,
@@ -43,6 +47,10 @@ export class JobManagerService {
     return this.store.findAll()
   }
 
+  findById(id: string): Promise<JobRecord> {
+    return this.store.findById(id)
+  }
+
   private async enqueue(job: JobRecord) {
     await this.gate.acquire()
     this.execute(job)
@@ -56,18 +64,19 @@ export class JobManagerService {
     await this.store.update(job)
 
     try {
-      const { exitCode, signal } = await this.runner.run(job.args)
-      await this.handleResult(job, exitCode, signal)
+      const { exitCode, signal, stdout } = await this.runner.run(job.args)
+      await this.handleResult(job, exitCode, signal, stdout)
     } catch (err) {
       this.log.error(`Spawn error for ${job.id}: ${err.message}`)
       await this.handleResult(job, null, 'spawn-error')
     }
   }
 
-  private async handleResult(job: JobRecord, exitCode: number | null, signal: string | null) {
+  private async handleResult(job: JobRecord, exitCode?: number, signal?: string, stdout?: string) {
     job.exitCode = exitCode ?? undefined
     job.signal = signal ?? null
     job.endTime = new Date()
+    job.result = stdout
 
     switch (exitCode) {
       case 0:

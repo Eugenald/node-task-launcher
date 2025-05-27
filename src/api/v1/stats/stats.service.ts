@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { JOB_STORE_TOKEN } from '../../job-execution-store/job-store.module'
-import { JobStore } from '../../job-execution-store/types/job-store.interface'
-import { JobRecord } from '../../common/job.types'
+import { JOB_STORE_TOKEN } from '../../../job-execution-store/job-store.module'
+import { JobStore } from '../../../job-execution-store/types/job-store.interface'
+import { JobRecord } from '../../../common/job.types'
 import { StatsResponseDto } from './dto/stats.dto'
 
 @Injectable()
